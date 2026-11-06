@@ -2,89 +2,8 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.get("/", (req, res) => res.type('html').send(html));
-
-app.get('/req', (req, res) => {
-  console.log("Just got a request!")
-  res.send('Yo!')
-})
-
-app.get('/meunome', (req, res) => {
-  res.send('Meu nome é Gabriel Fujibayashi')
-})
-
-app.get('/tico', (req, res) => {
-  res.send('Teco')
-})
-
-app.get('/tico', (req, res) => {
-  res.json([
-    {
-      nome: "Pikachu"
-    },
-    {
-      nome: "Caterpie"
-    },
-    {
-      nome: "Pidgeotto"
-    },
-    {
-      nome: "Bulbasaur"
-    },
-    {
-      nome: "Charmander"
-    },
-    {
-      nome: "Squirtle"
-    },
-    {
-      nome: "Krabby"
-    },
-    {
-      nome: "Primeape"
-    },
-    {
-      nome: "Muk"
-    },
-    {
-      nome: "Tauros"
-    }
-  ])
-})
-
-app.post('/series', (req, res) => {
-  res.json([
-    {
-      nome: "From"
-    },
-    {
-      nome: "the walking dead "
-    },
-    {
-      nome: "Supernatural"
-    }
-  ])
-})
-
-app.post('/series', (req, res) => {
-  req.json([
-    {
-      nome: "From"
-    },
-    {
-      nome: "the walking dead "
-    },
-    {
-      nome: "Supernatural"
-    }
-  ])
-})
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-
 
 const html = `
 <!DOCTYPE html>
@@ -135,4 +54,71 @@ const html = `
     </section>
   </body>
 </html>
-`
+`;
+
+app.get("/", (req, res) => res.type("html").send(html));
+
+app.get("/req", (req, res) => {
+  console.log("Just got a request!");
+  res.send("Yo!");
+});
+
+app.get("/meunome", (req, res) => {
+  res.send("Meu nome é Gabriel Fujibayashi");
+});
+
+app.get("/tico", (req, res) => {
+  res.send("teco");
+});
+
+app.get("/pokemons", (req, res) => {
+  res.json([
+    { nome: "Caterpie" },
+    { nome: "Pidgeotto" },
+    { nome: "Bulbasaur" },
+    { nome: "Charmander" },
+    { nome: "Squirtle" },
+    { nome: "Krabby" },
+    { nome: "Primeape" },
+    { nome: "Muk" },
+    { nome: "Tauros" },
+    { nome: "Lapras" }
+  ]);
+});
+
+app.post("/series", (req, res) => {
+  res.json([
+    { nome: "From" },
+    { nome: "The Walking Dead" },
+    { nome: "Supernatural" }
+  ]);
+});
+
+app.get("/erro", (req, res) => {
+  throw new Error("Bug simulado em produção!");
+});
+
+app.get("/api", async (req, res) => {
+  try {
+    const resposta = await fetch("https://pokeapi.co/api/v2/pokemon/pikachu");
+    if (!resposta.ok) {
+      return res.status(resposta.status).json({ erro: "Falha ao consultar a API externa" });
+    }
+    const dados = await resposta.json();
+    res.json({
+      nome: dados.name,
+      altura: dados.height,
+      peso: dados.weight,
+      tipos: dados.types.map((t) => t.type.name)
+    });
+  } catch (erro) {
+    res.status(500).json({ erro: "Erro ao consumir a API", detalhe: erro.message });
+  }
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ erro: "Erro interno do servidor", mensagem: err.message });
+});
+
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
