@@ -55,6 +55,20 @@ app.get('/tico', (req, res) => {
   ])
 })
 
+app.post('/series', (req, res) => {
+  res.json([
+    {
+      nome: "From"
+    },
+    {
+      nome: "the walking dead "
+    },
+    {
+      nome: "Supernatural"
+    }
+  ])
+})
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 
