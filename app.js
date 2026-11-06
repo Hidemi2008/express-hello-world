@@ -69,6 +69,20 @@ app.post('/series', (req, res) => {
   ])
 })
 
+app.post('/series', (req, res) => {
+  req.json([
+    {
+      nome: "From"
+    },
+    {
+      nome: "the walking dead "
+    },
+    {
+      nome: "Supernatural"
+    }
+  ])
+})
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 
